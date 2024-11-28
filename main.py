@@ -3,17 +3,15 @@ from api.text_router import router as text_router
 from api.user_router import router as user_router
 from db.database import engine
 from domain.user.entities import Base as UserBase
-from domain.text.entities import Base as TextBase
 
 app = FastAPI()
 
 # 라우터 연결
-app.include_router(text_router, prefix="/text", tags=["text"])
+# app.include_router(text_router, prefix="/text", tags=["text"])
 app.include_router(user_router, prefix="/user", tags=["user"])
 
 # 데이터베이스 테이블 생성
 UserBase.metadata.create_all(bind=engine)
-TextBase.metadata.create_all(bind=engine)
 
 
 @app.get("/health")

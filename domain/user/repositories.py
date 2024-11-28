@@ -2,12 +2,25 @@ from sqlalchemy.orm import Session
 from domain.user.entities import User
 from domain.user.request import CreateUserRequest
 from typing import List
+from passlib.context import CryptContext
+from fastapi import HTTPException
+
+bcrypt_context = CryptContext(schemes=["bcrypt"], deprecated="auto")
 
 
 class UserRepository:
-    def create_user(self, db: Session, user: CreateUserRequest) -> User:
+    def __init__(self, db: Session):
+        self.db = db
+
+    def create_user(self, user: CreateUserRequest) -> User:
+        existing_user = self.get_user_by_email(user.email)
+        if existing_user:
+            raise HTTPException(status_code=400, detail="Email already registered")
+
         db_user = User(
-            username=user.username, email=user.email, password_hash=user.password
+            username=user.username,
+            email=user.email,
+            password_hash=bcrypt_context.hash(user.password),
         )
         self.db.add(db_user)
         self.db.commit()

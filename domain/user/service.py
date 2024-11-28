@@ -9,15 +9,17 @@ db_dependency = Annotated[Session, Depends(get_db)]
 
 
 class UserService:
+    def __init__(self, db: Session):
+        self.db = db
+        self.repository = UserRepository(db)
 
     # 회원가입
-    def create_user(db: db_dependency, create_user_request: CreateUserRequest):
-        created_user = UserRepository.create_user(db, create_user_request)
-        return created_user
+    def create_user(self, create_user_request: CreateUserRequest):
+        return self.repository.create_user(create_user_request)
 
     # 로그인
-    def login(db: db_dependency, login_user_request: LoginUserRequest):
-        return login_user_request
+    def login(self, login_user_request: LoginUserRequest):
+        return self.repository.login(login_user_request)
 
     # 로그아웃
     def logout():
