@@ -5,8 +5,6 @@ from fastapi import Depends
 from sqlalchemy.orm import Session
 from db.database import get_db
 
-db_dependency = Annotated[Session, Depends(get_db)]
-
 
 class UserService:
     def __init__(self, db: Session):
@@ -26,8 +24,8 @@ class UserService:
         return {}
 
     # 프로필 조회
-    def get_profile():
-        return {}
+    def get_profile(self, user_id: int):
+        return self.repository.get_user_by_id(user_id)
 
     # 회원탈퇴
     def delete_user():

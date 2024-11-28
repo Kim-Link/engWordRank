@@ -1,7 +1,7 @@
 from fastapi import APIRouter, Depends
 from sqlalchemy.orm import Session
 from db.database import get_db
-from domain.user.response import CreateUserResponse
+from domain.user.response import CreateUserResponse, GetProfileResponse
 from domain.user.service import UserService
 from domain.user.request import CreateUserRequest, LoginUserRequest
 
@@ -22,3 +22,10 @@ def create_user(create_user_request: CreateUserRequest, db: Session = Depends(ge
 def login(login_request: LoginUserRequest, db: Session = Depends(get_db)):
     user_service = UserService(db)
     return user_service.login(login_request)
+
+
+@router.get("/profile")
+def get_profile(user_id: int, db: Session = Depends(get_db)):
+    user_service = UserService(db)
+    user = user_service.get_profile(user_id)
+    return GetProfileResponse(id=user.id, username=user.username, email=user.email)
