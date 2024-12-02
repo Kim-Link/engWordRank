@@ -12,7 +12,7 @@ class UserRepository:
     def __init__(self, db: Session):
         self.db = db
 
-    def create_user(self, user: CreateUserRequest) -> User:
+    async def create_user(self, user: CreateUserRequest) -> User:
         existing_user = self.get_user_by_email(user.email)
         if existing_user:
             raise HTTPException(status_code=400, detail="Email already registered")
@@ -27,21 +27,21 @@ class UserRepository:
         self.db.refresh(db_user)
         return db_user
 
-    def get_user_by_email(self, email: str) -> User:
-        return self.db.query(User).filter(User.email == email).first()
+    async def get_user_by_email(self, email: str) -> User:
+        return await self.db.query(User).filter(User.email == email).first()
 
     def get_user_by_username(self, username: str) -> User:
         return self.db.query(User).filter(User.username == username).first()
 
-    def get_user_by_id(self, user_id: int) -> User:
-        return self.db.query(User).filter(User.id == user_id).first()
+    async def get_user_by_id(self, user_id: int) -> User:
+        return await self.db.query(User).filter(User.id == user_id).first()
 
-    def delete_user(self, user_id: int):
-        self.db.query(User).filter(User.id == user_id).delete()
-        self.db.commit()
+    async def delete_user(self, user_id: int):
+        await self.db.query(User).filter(User.id == user_id).delete()
+        await self.db.commit()
 
-    def get_all_users(self) -> List[User]:
-        return self.db.query(User).all()
+    async def get_all_users(self) -> List[User]:
+        return await self.db.query(User).all()
 
     def authenticate_user(self, username: str, password: str):
         user = self.get_user_by_username(username)

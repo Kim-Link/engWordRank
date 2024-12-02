@@ -12,21 +12,17 @@ class UserService:
         self.repository = UserRepository(db)
 
     # 회원가입
-    def create_user(self, create_user_request: CreateUserRequest):
-        return self.repository.create_user(create_user_request)
-
-    # 로그인
-    def login(self, login_user_request: LoginUserRequest):
-        return self.repository.login(login_user_request)
+    async def create_user(self, create_user_request: CreateUserRequest):
+        return await self.repository.create_user(create_user_request)
 
     # 로그아웃
     def logout():
         return {}
 
     # 프로필 조회
-    def get_profile(self, user_id: int):
-        return self.repository.get_user_by_id(user_id)
+    async def get_profile(self, user_id: int):
+        return await self.repository.get_user_by_id(user_id)
 
     # 회원탈퇴
-    def delete_user():
+    async def delete_user():
         return {}

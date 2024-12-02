@@ -11,7 +11,7 @@ from datetime import timedelta
 router = APIRouter()
 
 
-@router.post("/token")
+@router.post("/")
 def login_for_access_token(
     form_data: Annotated[OAuth2PasswordRequestForm, Depends()],
     db: Session = Depends(get_db),

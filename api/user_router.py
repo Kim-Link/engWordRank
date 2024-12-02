@@ -9,23 +9,19 @@ router = APIRouter()
 
 
 @router.post("/signup")
-def create_user(create_user_request: CreateUserRequest, db: Session = Depends(get_db)):
+async def create_user(
+    create_user_request: CreateUserRequest, db: Session = Depends(get_db)
+):
     user_service = UserService(db)
-    created_user = user_service.create_user(create_user_request)
+    created_user = await user_service.create_user(create_user_request)
 
     return CreateUserResponse(
         id=created_user.id, username=created_user.username, email=created_user.email
     )
 
 
-@router.post("/login")
-def login(login_request: LoginUserRequest, db: Session = Depends(get_db)):
-    user_service = UserService(db)
-    return user_service.login(login_request)
-
-
 @router.get("/profile")
-def get_profile(user_id: int, db: Session = Depends(get_db)):
+async def get_profile(user_id: int, db: Session = Depends(get_db)):
     user_service = UserService(db)
-    user = user_service.get_profile(user_id)
+    user = await user_service.get_profile(user_id)
     return GetProfileResponse(id=user.id, username=user.username, email=user.email)
