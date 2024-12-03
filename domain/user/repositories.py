@@ -13,7 +13,8 @@ class UserRepository:
         self.db = db
 
     async def create_user(self, user: CreateUserRequest) -> User:
-        existing_user = self.get_user_by_email(user.email)
+        existing_user = await self.get_user_by_email(user.email)
+        print(">>>>>>>>>>>>>>>>>>>>>", existing_user)
         if existing_user:
             raise HTTPException(status_code=400, detail="Email already registered")
 
@@ -28,20 +29,20 @@ class UserRepository:
         return db_user
 
     async def get_user_by_email(self, email: str) -> User:
-        return await self.db.query(User).filter(User.email == email).first()
+        return self.db.query(User).filter(User.email == email).first()
 
     def get_user_by_username(self, username: str) -> User:
         return self.db.query(User).filter(User.username == username).first()
 
     async def get_user_by_id(self, user_id: int) -> User:
-        return await self.db.query(User).filter(User.id == user_id).first()
+        return self.db.query(User).filter(User.id == user_id).first()
 
     async def delete_user(self, user_id: int):
-        await self.db.query(User).filter(User.id == user_id).delete()
-        await self.db.commit()
+        self.db.query(User).filter(User.id == user_id).delete()
+        self.db.commit()
 
     async def get_all_users(self) -> List[User]:
-        return await self.db.query(User).all()
+        return self.db.query(User).all()
 
     def authenticate_user(self, username: str, password: str):
         user = self.get_user_by_username(username)
