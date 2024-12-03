@@ -14,7 +14,6 @@ class UserRepository:
 
     async def create_user(self, user: CreateUserRequest) -> User:
         existing_user = await self.get_user_by_email(user.email)
-        print(">>>>>>>>>>>>>>>>>>>>>", existing_user)
         if existing_user:
             raise HTTPException(status_code=400, detail="Email already registered")
 
