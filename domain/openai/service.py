@@ -1,7 +1,9 @@
 from openai import OpenAI
-from typing import List, Dict
+from typing import Dict
 import os
 from dotenv import load_dotenv
+import json
+import aiohttp
 
 load_dotenv()
 
@@ -12,15 +14,41 @@ class OpenAiService:
     def __init__(self):
         self.client = OpenAI(api_key=api_key)
 
-    def get_completion(self, word: str) -> str:
+    async def get_word_info(self, word: str) -> Dict[str, str]:
         messages = [
             {"role": "system", "content": "You are a helpful assistant."},
-            {"role": "user", "content": f"'{word}'의 뜻과 사용 예시 알려줘."},
+            {
+                "role": "user",
+                "content": (
+                    f"Please provide the definition, part of speech, two example sentences, "
+                    f"and the Korean meaning for the word '{word}' in JSON format. "
+                    f"If you don't know the answer or if the word does not exist, please provide an empty string."
+                ),
+            },
         ]
-        completion = self.client.chat.completions.create(
-            model="gpt-3.5-turbo",
-            messages=messages,
-            response_format={"type": "json_object"},
-        )
-        print("completion >> ", completion.choices[0].message.content)
-        return completion.choices[0].message.content
+        async with aiohttp.ClientSession() as session:
+            async with session.post(
+                "https://api.openai.com/v1/chat/completions",
+                headers={
+                    "Authorization": f"Bearer {api_key}",
+                    "Content-Type": "application/json",
+                },
+                json={
+                    "model": "gpt-4o-mini",
+                    "messages": messages,
+                    "response_format": {"type": "json_object"},
+                },
+            ) as response:
+                response_data = await response.json()
+                response_content = response_data["choices"][0]["message"]["content"]
+                response_json = json.loads(response_content)
+                print(response_json)
+                word_info = {
+                    "word": word,
+                    "word_class": response_json.get("part_of_speech", ""),
+                    "kr_meaning": response_json.get("korean_meaning", ""),
+                    "en_meaning": response_json.get("definition", ""),
+                    "example": response_json.get("example_sentences", ""),
+                }
+
+                return word_info

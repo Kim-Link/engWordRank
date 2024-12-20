@@ -1,12 +1,10 @@
-from typing import Counter, List, Dict
+from typing import Counter
 import spacy
 from sqlalchemy.orm import Session
 from domain.word.request import SaveWordRequest
 from domain.word.repositories import WordRepository
 from domain.openai.service import OpenAiService
-import requests
-import aiohttp
-from bs4 import BeautifulSoup
+
 
 nlp = spacy.load("en_core_web_sm")
 
@@ -41,36 +39,11 @@ class WordService:
 
     # 단어 뜻 검색
     async def search_word_meaning(self, word: str):
-        result = await self.openai_service.get_completion(word)
-        print("result >> ", result)
-        return result
-
-    # 단어 뜻을 네이버 사전에서 검색
-    async def search_word_meaning_naver(self, word: str):
-        result = await self.naver_search(word)
-        print("result >> ", result)
-        return result
-
-    async def naver_search(self, word: str):
-        try:
-            url = "https://en.dict.naver.com/#/search"
-            params = {
-                "query": word,
-                "range": "all",
+        word = await self.repository.search_word(word)
+        if word:
+            return {
+                "word": word.word,
+                "frequency": word.frequency,
             }
-            async with aiohttp.ClientSession() as session:
-                async with session.get(url, params=params) as response:
-                    html_content = await response.text()
-
-                    # BeautifulSoup로 HTML 파싱
-                    soup = BeautifulSoup(html_content, "html.parser")
-
-                    # 특정 div 클래스 필터링
-                    filtered_divs = soup.find_all("div", class_="row ")
-                    print("filtered_divs >> ", filtered_divs)
-
-                    # 필터링된 결과를 리스트로 반환
-                    return [str(div) for div in filtered_divs]
-        except Exception as e:
-            print("error >> ", e)
-            return None
+        result = await self.openai_service.get_word_info(word)
+        return result

@@ -41,5 +41,5 @@ async def get_word_list(user: user_dependency, db: Session = Depends(get_db)):
 @router.get("/search")
 async def search_word_meaning(word: str, db: Session = Depends(get_db)):
     word_service = WordService(db)
-    result = await word_service.search_word_meaning_naver(word)
+    result = await word_service.search_word_meaning(word)
     return result

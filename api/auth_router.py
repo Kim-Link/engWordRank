@@ -2,7 +2,6 @@ from fastapi import APIRouter, Depends
 from fastapi.security import OAuth2PasswordRequestForm
 from typing import Annotated
 from domain.auth.service import AuthService
-from domain.user.service import UserService
 from sqlalchemy.orm import Session
 from db.database import get_db
 from fastapi import HTTPException

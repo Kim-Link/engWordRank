@@ -43,7 +43,7 @@ class UserRepository:
     async def get_all_users(self) -> List[User]:
         return self.db.query(User).all()
 
-    def authenticate_user(self, username: str, password: str):
+    async def authenticate_user(self, username: str, password: str):
         user = self.get_user_by_username(username)
         if not user:
             return False
