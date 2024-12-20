@@ -22,7 +22,7 @@ class AuthService:
         self.repository = UserRepository(db)
 
     def create_access_token(self, email: str, user_id: int, expires_min: int):
-        encode = {"sub": email, "id": user_id}
+        encode = {"sub": email, "user_id": user_id}
         expires_delta = timedelta(minutes=expires_min)
         expire = datetime.now(timezone.utc) + expires_delta
         encode.update({"exp": expire})
@@ -33,7 +33,7 @@ class AuthService:
         try:
             payload = jwt.decode(token, SECRET_KEY, algorithms=[ALGORITHM])
             email: str = payload.get("sub")
-            user_id: int = payload.get("id")
+            user_id: int = payload.get("user_id")
             if email is None or user_id is None:
                 raise HTTPException(
                     status_code=status.HTTP_401_UNAUTHORIZED,
@@ -57,7 +57,7 @@ class AuthService:
         try:
             payload = jwt.decode(token, SECRET_KEY, algorithms=[ALGORITHM])
             email: str = payload.get("sub")
-            user_id: int = payload.get("id")
+            user_id: int = payload.get("user_id")
             if email is None or user_id is None:
                 raise HTTPException(
                     status_code=status.HTTP_401_UNAUTHORIZED,
