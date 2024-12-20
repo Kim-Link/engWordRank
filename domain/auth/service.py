@@ -46,8 +46,8 @@ class AuthService:
                 detail="Could not validate credentials",
             )
 
-    def authenticate_user(self, username: str, password: str):
-        user = self.repository.authenticate_user(username, password)
+    async def authenticate_user(self, username: str, password: str):
+        user = await self.repository.authenticate_user(username, password)
         if not user:
             return False
         return user
@@ -64,7 +64,7 @@ class AuthService:
                     detail="Could not validate credentials",
                 )
             return User(
-                id=payload.get("user_id"),
+                user_id=payload.get("user_id"),
                 email=payload.get("sub"),
                 # 기타 필요한 필드들...
             )

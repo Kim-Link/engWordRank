@@ -4,6 +4,7 @@ import os
 from dotenv import load_dotenv
 import json
 import aiohttp
+from domain.word.entities import Dictionary
 
 load_dotenv()
 
@@ -20,7 +21,7 @@ class OpenAiService:
             {
                 "role": "user",
                 "content": (
-                    f"Please provide the definition, part of speech, two example sentences, "
+                    f"Please provide the definition, part of speech, two example sentences(as example_sentences), "
                     f"and the Korean meaning for the word '{word}' in JSON format. "
                     f"If you don't know the answer or if the word does not exist, please provide an empty string."
                 ),
@@ -42,13 +43,13 @@ class OpenAiService:
                 response_data = await response.json()
                 response_content = response_data["choices"][0]["message"]["content"]
                 response_json = json.loads(response_content)
-                print(response_json)
-                word_info = {
-                    "word": word,
-                    "word_class": response_json.get("part_of_speech", ""),
-                    "kr_meaning": response_json.get("korean_meaning", ""),
-                    "en_meaning": response_json.get("definition", ""),
-                    "example": response_json.get("example_sentences", ""),
-                }
-
+                print(" >>> response_json: ", response_json)
+                word_info = Dictionary(
+                    word=word,
+                    word_class=response_json["part_of_speech"],
+                    kr_meaning=response_json["korean_meaning"],
+                    en_meaning=response_json["definition"],
+                    example=response_json["example_sentences"],
+                )
+                print(" >>> complete word_info >>> ")
                 return word_info

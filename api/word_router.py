@@ -27,19 +27,21 @@ async def save_word(
     word_request: SaveWordRequest, user: user_dependency, db: Session = Depends(get_db)
 ):
     word_service = WordService(db=db)
-    result = await word_service.save_word(word_request, user.id)
+    result = await word_service.save_word(word_request, user.user_id)
     return result
 
 
 @router.get("/list")
 async def get_word_list(user: user_dependency, db: Session = Depends(get_db)):
     word_service = WordService(db=db)
-    result = await word_service.get_word_list(user.id)
+    result = await word_service.get_word_list(user.user_id)
     return result
 
 
 @router.get("/search")
-async def search_word_meaning(word: str, db: Session = Depends(get_db)):
-    word_service = WordService(db)
+async def search_word_meaning(
+    user: user_dependency, word: str, db: Session = Depends(get_db)
+):
+    word_service = WordService(db=db)
     result = await word_service.search_word_meaning(word)
     return result

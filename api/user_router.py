@@ -48,4 +48,4 @@ async def login_guest(db: Session = Depends(get_db)):
 async def get_profile(user_id: int, db: Session = Depends(get_db)):
     user_service = UserService(db)
     user = await user_service.get_profile(user_id)
-    return GetProfileResponse(id=user.id, username=user.username, email=user.email)
+    return GetProfileResponse(id=user.user_id, username=user.username, email=user.email)

@@ -30,21 +30,22 @@ class UserRepository:
     async def get_user_by_email(self, email: str) -> User:
         return self.db.query(User).filter(User.email == email).first()
 
-    def get_user_by_username(self, username: str) -> User:
+    async def get_user_by_username(self, username: str) -> User:
         return self.db.query(User).filter(User.username == username).first()
 
     async def get_user_by_id(self, user_id: int) -> User:
-        return self.db.query(User).filter(User.id == user_id).first()
+        return self.db.query(User).filter(User.user_id == user_id).first()
 
     async def delete_user(self, user_id: int):
-        self.db.query(User).filter(User.id == user_id).delete()
+        self.db.query(User).filter(User.user_id == user_id).delete()
         self.db.commit()
 
     async def get_all_users(self) -> List[User]:
         return self.db.query(User).all()
 
     async def authenticate_user(self, username: str, password: str):
-        user = self.get_user_by_username(username)
+        print("username!!!!!!!!!", username)
+        user = await self.get_user_by_username(username)
         if not user:
             return False
         if not bcrypt_context.verify(password, user.password_hash):
