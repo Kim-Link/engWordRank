@@ -28,6 +28,11 @@ class WordService:
         # 단어 목록 반환
         return result
 
+    # 단어 분석(원래 형태 복원)
+    async def get_original_form(self, text: str):
+        doc = nlp(text)
+        return doc[0].lemma_
+
     # 단어 저장
     async def save_word(self, request: SaveWordRequest, user_id: int):
         if not self.db:
@@ -40,7 +45,7 @@ class WordService:
 
     # 단어 뜻 검색
     async def search_word_meaning(self, word: str):
-        word = word.lower()
+        word = await self.get_original_form(word.lower())
         word_result = await self.repository.search_word(word)
         if not word_result:
             new_word = await self.openai_service.get_word_info(word)

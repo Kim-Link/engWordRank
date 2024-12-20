@@ -30,4 +30,5 @@ class WordRepository:
         print(" >>> dictionary: ", dictionary)
         self.db.add(dictionary)
         self.db.commit()
+        self.db.refresh(dictionary)
         return dictionary
