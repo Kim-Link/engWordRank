@@ -21,8 +21,9 @@ class AuthService:
         self.db = db
         self.repository = UserRepository(db)
 
-    def create_access_token(self, email: str, user_id: int, expires_delta: timedelta):
+    def create_access_token(self, email: str, user_id: int, expires_min: int):
         encode = {"sub": email, "id": user_id}
+        expires_delta = timedelta(minutes=expires_min)
         expire = datetime.now(timezone.utc) + expires_delta
         encode.update({"exp": expire})
         encoded_jwt = jwt.encode(encode, SECRET_KEY, algorithm=ALGORITHM)

@@ -1,5 +1,5 @@
 from sqlalchemy.orm import Session
-from domain.word.entities import Word
+from domain.word.entities import Dictionary
 from domain.word.request import SaveWordRequest
 
 
@@ -8,16 +8,20 @@ class WordRepository:
         self.db = db
 
     async def save_word(self, request: SaveWordRequest, user_id: int):
-        word = Word(
+        dictionary = Dictionary(
             user_id=user_id,
             word=request.word,
             frequency=request.frequency,
         )
-        self.db.add(word)
+        self.db.add(dictionary)
         self.db.commit()
-        self.db.refresh(word)
-        return word
+        self.db.refresh(dictionary)
+        return dictionary
 
     async def get_word_list(self, user_id: int):
-        words = self.db.query(Word).filter(Word.user_id == user_id).all()
+        words = self.db.query(Dictionary).filter(Dictionary.user_id == user_id).all()
         return words
+
+    async def search_word(self, word: str):
+        word = self.db.query(Dictionary).filter(Dictionary.word == word).first()
+        return word

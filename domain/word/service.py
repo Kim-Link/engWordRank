@@ -1,16 +1,19 @@
-from typing import Counter, List, Dict
+from typing import Counter
 import spacy
 from sqlalchemy.orm import Session
 from domain.word.request import SaveWordRequest
 from domain.word.repositories import WordRepository
+from domain.openai.service import OpenAiService
+
 
 nlp = spacy.load("en_core_web_sm")
 
 
 class WordService:
-    def __init__(self, db=None):
+    def __init__(self, db: Session):
         self.db = db
         self.repository = WordRepository(db)
+        self.openai_service = OpenAiService()
 
     # 텍스트 분석
     async def get_most_used_words(self, text: str):
@@ -33,3 +36,14 @@ class WordService:
     # 단어 목록 조회
     async def get_word_list(self, user_id: int):
         return await self.repository.get_word_list(user_id)
+
+    # 단어 뜻 검색
+    async def search_word_meaning(self, word: str):
+        word = await self.repository.search_word(word)
+        if word:
+            return {
+                "word": word.word,
+                "frequency": word.frequency,
+            }
+        result = await self.openai_service.get_word_info(word)
+        return result
