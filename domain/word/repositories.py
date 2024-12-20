@@ -25,3 +25,9 @@ class WordRepository:
     async def search_word(self, word: str):
         word = self.db.query(Dictionary).filter(Dictionary.word == word).first()
         return word
+
+    async def save_dictionary(self, dictionary: Dictionary):
+        print(" >>> dictionary: ", dictionary)
+        self.db.add(dictionary)
+        self.db.commit()
+        return dictionary

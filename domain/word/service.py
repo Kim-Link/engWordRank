@@ -4,6 +4,7 @@ from sqlalchemy.orm import Session
 from domain.word.request import SaveWordRequest
 from domain.word.repositories import WordRepository
 from domain.openai.service import OpenAiService
+from domain.word.entities import Dictionary
 
 
 nlp = spacy.load("en_core_web_sm")
@@ -39,11 +40,19 @@ class WordService:
 
     # 단어 뜻 검색
     async def search_word_meaning(self, word: str):
-        word = await self.repository.search_word(word)
-        if word:
-            return {
-                "word": word.word,
-                "frequency": word.frequency,
-            }
-        result = await self.openai_service.get_word_info(word)
-        return result
+        word = word.lower()
+        word_result = await self.repository.search_word(word)
+        if not word_result:
+            new_word = await self.openai_service.get_word_info(word)
+            register_word = await self.repository.save_dictionary(new_word)
+            return register_word
+
+        else:
+            result = Dictionary(
+                word=word_result.word,
+                word_class=word_result.word_class,
+                kr_meaning=word_result.kr_meaning,
+                en_meaning=word_result.en_meaning,
+                example=word_result.example,
+            )
+            return result
