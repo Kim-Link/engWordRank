@@ -35,9 +35,31 @@ class WordService:
 
     # 단어 저장
     async def save_word(self, request: SaveWordRequest, user_id: int):
-        if not self.db:
-            raise ValueError("Database connection is required for this operation")
-        return await self.repository.save_word(request, user_id)
+        word = request.word.lower()
+
+        # 사전에 저장되어 있는 단어인지 확인
+        word_info = await self.search_word_meaning(word)
+
+        # 이미 저장한 단어인지 확인
+        search_history = await self.repository.find_my_word(
+            word_info.dictionary_id, user_id
+        )
+        if search_history:
+            await self.repository.update_frequency(word_info.dictionary_id, user_id)
+            return
+
+        await self.repository.save_word(
+            word, user_id, dictionary_id=word_info.dictionary_id
+        )
+        return "단어 저장 완료"
+
+    # 단어 삭제
+    async def delete_word(self, word_id: int, user_id: int):
+        word = await self.repository.find_my_word_by_id(word_id, user_id)
+        if not word:
+            return "해당 단어가 존재하지 않습니다."
+        await self.repository.delete_word(word_id)
+        return "단어 삭제 완료"
 
     # 단어 목록 조회
     async def get_word_list(self, user_id: int):
@@ -54,6 +76,7 @@ class WordService:
 
         else:
             result = Dictionary(
+                dictionary_id=word_result.dictionary_id,
                 word=word_result.word,
                 word_class=word_result.word_class,
                 kr_meaning=word_result.kr_meaning,

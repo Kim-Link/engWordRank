@@ -22,6 +22,5 @@ class UserDictionary(Base):
     user_id = Column(Integer, ForeignKey("users.user_id"))
     dictionary_id = Column(Integer, ForeignKey("dictionary.dictionary_id"))
     frequency = Column(Integer, nullable=False, default=0)
-
     created_at = Column(DateTime, default=func.now())
     updated_at = Column(DateTime, default=func.now())

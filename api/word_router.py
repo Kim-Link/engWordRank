@@ -27,7 +27,17 @@ async def save_word(
     word_request: SaveWordRequest, user: user_dependency, db: Session = Depends(get_db)
 ):
     word_service = WordService(db=db)
+    print(" >>> user: ", user.user_id)
     result = await word_service.save_word(word_request, user.user_id)
+    return result
+
+
+@router.delete("/delete")
+async def delete_word(
+    word_id: int, user: user_dependency, db: Session = Depends(get_db)
+):
+    word_service = WordService(db=db)
+    result = await word_service.delete_word(word_id, user.user_id)
     return result
 
 
