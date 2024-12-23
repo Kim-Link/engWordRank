@@ -55,3 +55,23 @@ class WordRepository:
         self.db.commit()
         self.db.refresh(dictionary)
         return dictionary
+
+    async def find_my_word_by_id(self, word_id: int, user_id: int):
+        return (
+            self.db.query(UserDictionary)
+            .filter(
+                UserDictionary.dictionary_id == word_id,
+                UserDictionary.user_id == user_id,
+            )
+            .first()
+        )
+
+    async def delete_word(self, word_id: int):
+        word = (
+            self.db.query(UserDictionary)
+            .filter(UserDictionary.dictionary_id == word_id)
+            .first()
+        )
+        self.db.delete(word)
+        self.db.commit()
+        return "단어 삭제 완료"

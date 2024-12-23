@@ -53,6 +53,14 @@ class WordService:
         )
         return "단어 저장 완료"
 
+    # 단어 삭제
+    async def delete_word(self, word_id: int, user_id: int):
+        word = await self.repository.find_my_word_by_id(word_id, user_id)
+        if not word:
+            return "해당 단어가 존재하지 않습니다."
+        await self.repository.delete_word(word_id)
+        return "단어 삭제 완료"
+
     # 단어 목록 조회
     async def get_word_list(self, user_id: int):
         return await self.repository.get_word_list(user_id)
