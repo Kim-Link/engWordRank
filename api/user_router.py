@@ -2,7 +2,7 @@ from fastapi import APIRouter, Depends
 from sqlalchemy.orm import Session
 from db.database import get_db
 from domain.user.response import CreateUserResponse, GetProfileResponse
-from domain.user.service import UserService
+from domain.user.service import UserService, UserServiceBySupabase
 from domain.user.request import CreateUserRequest, LoginUserRequest
 from domain.auth.service import AuthService
 from typing import Annotated
@@ -25,6 +25,12 @@ async def create_user(
         username=created_user.username,
         email=created_user.email,
     )
+
+
+@router.post("/register")
+async def register_user(username: str, email: str, password: str):
+    user_service = UserServiceBySupabase()
+    return await user_service.create_user(username, email, password)
 
 
 @router.post("/signin")

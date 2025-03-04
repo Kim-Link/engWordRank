@@ -5,7 +5,6 @@ from domain.auth.service import AuthService
 from sqlalchemy.orm import Session
 from db.database import get_db
 from fastapi import HTTPException
-from datetime import timedelta
 
 router = APIRouter()
 

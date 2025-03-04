@@ -3,7 +3,7 @@ import spacy
 from sqlalchemy.orm import Session
 from domain.word.request import SaveWordRequest
 from domain.word.repositories import WordRepository
-from domain.openai.service import OpenAiService
+from lib.openai.service import OpenAiService
 from domain.word.entities import Dictionary
 
 

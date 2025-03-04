@@ -1,0 +1,21 @@
+{
+  "name": "engWordRnak",
+  "dockerComposeFile": "docker-compose.yml",
+  "service": "app-dev",
+  "runServices": ["app-dev"],
+  "workspaceFolder": "/home/backend/app",
+  "containerUser": "root",
+  "overrideCommand": false,
+  "customizations": {
+    "vscode": {
+      "settings": {},
+      "extensions": [
+        "ms-python.python",
+        "ms-python.black-formatter",
+        "ms-python.flake8",
+        "eamodio.gitlens",
+        "streetsidesoftware.code-spell-checker"
+      ]
+    }
+  }
+}

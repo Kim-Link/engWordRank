@@ -73,3 +73,11 @@ class AuthService:
                 status_code=status.HTTP_401_UNAUTHORIZED,
                 detail="Could not validate credentials",
             )
+
+    # ✅ 비밀번호 해싱 함수
+    def hash_password(password: str) -> str:
+        return bcrypt_context.hash(password)
+
+    # ✅ 비밀번호 검증 함수
+    def verify_password(plain_password: str, hashed_password: str) -> bool:
+        return bcrypt_context.verify(plain_password, hashed_password)
